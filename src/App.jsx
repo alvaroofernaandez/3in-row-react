@@ -1,17 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import confetti from 'canvas-confetti'
 import { Square } from './components/Square.jsx'
 import { TURNOS } from './constantes'
 import { checkWinnerFrom } from './logic/board'
 import { WinnerModal } from './components/WinnerModal.jsx'
+import { checkEndGame } from './logic/board'
 import './App.css'
 
 function App() {
-  const [board, setBoard] = useState(
-    Array(9).fill(null)
-  )
 
-  const[turno, setTurno] = useState(TURNOS.X)
+  const [board, setBoard] = useState(() => {
+    const boardFromLocalStorage = window.localStorage.getItem('board');
+    return boardFromLocalStorage ? JSON.parse(boardFromLocalStorage) : Array(9).fill(null);
+  });
+
+
+  const[turno, setTurno] = useState(() => {
+    const turnFromLocalStorage = window.localStorage.getItem('turno')
+    return turnFromLocalStorage ?? TURNOS.X
+  })
+
   const[winner, setWinner] = useState(null)
 
 
@@ -20,11 +28,12 @@ function App() {
     setBoard(Array(9).fill(null))
     setTurno(TURNOS.X)
     setWinner(null)
+
+    window.localStorage.removeItem('board')
+    window.localStorage.removeItem('turno')
   }
 
-  const checkEndGame = (newBoard) => {
-    return newBoard.every((square) => square !== null)
-  }
+
 
   const updateBoard = (index) => {
     if (board[index] || winner) return
@@ -33,8 +42,13 @@ function App() {
     newBoard[index] = turno
     setBoard(newBoard)
 
+
     const newTurno = turno === TURNOS.X ? TURNOS.O : TURNOS.X
     setTurno(newTurno)
+
+    window.localStorage.setItem('board', JSON.stringify(newBoard))
+    window.localStorage.setItem('turno', newTurno)
+    
 
     const newWinner = checkWinnerFrom(newBoard)
     if (newWinner) {
