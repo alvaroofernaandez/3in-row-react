@@ -8,12 +8,10 @@ import { checkEndGame } from './logic/board'
 import './App.css'
 
 function App() {
-
   const [board, setBoard] = useState(() => {
     const boardFromLocalStorage = window.localStorage.getItem('board');
     return boardFromLocalStorage ? JSON.parse(boardFromLocalStorage) : Array(9).fill(null);
   });
-
 
   const[turno, setTurno] = useState(() => {
     const turnFromLocalStorage = window.localStorage.getItem('turno')
@@ -21,8 +19,6 @@ function App() {
   })
 
   const[winner, setWinner] = useState(null)
-
-
 
   const resetGame = () => {
     setBoard(Array(9).fill(null))
@@ -33,8 +29,6 @@ function App() {
     window.localStorage.removeItem('turno')
   }
 
-
-
   const updateBoard = (index) => {
     if (board[index] || winner) return
 
@@ -42,14 +36,12 @@ function App() {
     newBoard[index] = turno
     setBoard(newBoard)
 
-
     const newTurno = turno === TURNOS.X ? TURNOS.O : TURNOS.X
     setTurno(newTurno)
 
     window.localStorage.setItem('board', JSON.stringify(newBoard))
     window.localStorage.setItem('turno', newTurno)
     
-
     const newWinner = checkWinnerFrom(newBoard)
     if (newWinner) {
       confetti()
@@ -61,8 +53,8 @@ function App() {
 
   return (
     <main className='board'>
-      <h1>3 IN ROW</h1>
-      <button onClick={resetGame}>Reset</button>
+      <h1>Tic Tac Toe</h1>
+      <button onClick={resetGame}>Reset Game</button>
       <section className='game'>
       {
         board.map((square, index) => {
@@ -88,11 +80,7 @@ function App() {
         </Square>
       </section>
 
-      
       <WinnerModal resetGame={resetGame} winner={winner} />
-
     </main> 
   )
 }
-
-export default App
